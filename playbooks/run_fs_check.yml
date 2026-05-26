@@ -10,4 +10,4 @@
 
     - name: Show result
       debug:
-        msg: "{{ fs_result.stdout }}"
+        var: fs_result.stdout
