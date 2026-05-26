@@ -1,0 +1,13 @@
+- name: Check filesystem usage locally
+  hosts: local
+  gather_facts: false
+  tasks:
+    - name: Run filesystem usage script
+      command: python3 scripts/fs_check.py
+      register: fs_result
+      changed_when: false
+      failed_when: fs_result.rc not in [0, 2]
+
+    - name: Show result
+      debug:
+        msg: "{{ fs_result.stdout }}"
