@@ -11,16 +11,13 @@ REPORT_FILE = Path("fs_report.json")
 def main():
     out = subprocess.check_output(["df", "-P"], text=True).splitlines()[1:]
     alerts = []
-    seen = set()
-
     for line in out:
         cols = line.split()
         if len(cols) < 6:
             continue
         fs, used_pct, mount = cols[0], cols[4], cols[5]
-        if fs.startswith(IGNORE_PREFIXES) or mount in seen:
+        if fs.startswith(IGNORE_PREFIXES):
             continue
-        seen.add(mount)
         try:
             pct = int(used_pct.rstrip("%"))
         except ValueError:
