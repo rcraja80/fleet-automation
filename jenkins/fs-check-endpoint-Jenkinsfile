@@ -6,12 +6,31 @@ pipeline {
         disableConcurrentBuilds()
     }
 
+    environment {
+        VENV = "${WORKSPACE}/.venv"
+        PYTHON = "${WORKSPACE}/.venv/bin/python"
+    }
+
     stages {
+        stage('Setup Python Env') {
+            steps {
+                sh '''
+                    cd endpoint
+                    if [ ! -d "$VENV" ]; then
+                        python3 -m venv "$VENV"
+                    fi
+                    "$PYTHON" -m pip install --upgrade pip
+                    "$PYTHON" -m pip install -r requirements.txt
+                    "$PYTHON" -m pip install uvicorn
+                '''
+            }
+        }
+
         stage('Start FastAPI Endpoint') {
             steps {
                 sh '''
                     cd endpoint
-                    JENKINS_NODE_COOKIE=dontKillMe nohup python3 -m uvicorn fs_check_app:app --host 127.0.0.1 --port 8000 > api.log 2>&1 &
+                    JENKINS_NODE_COOKIE=dontKillMe nohup "$PYTHON" -m uvicorn fs_check_app:app --host 127.0.0.1 --port 8000 > api.log 2>&1 &
                     echo $! > api.pid
                 '''
             }
