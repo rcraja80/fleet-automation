@@ -1,0 +1,28 @@
+pipeline {
+  agent any
+
+  options {
+    timestamps()
+    disableConcurrentBuilds()
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Run FS Check') {
+      steps {
+        sh 'ansible-playbook -i inventory/hosts.ini playbooks/run_fs_check.yml'
+      }
+    }
+  }
+
+  post {
+    always {
+      archiveArtifacts artifacts: '**/*.json, **/*.log', allowEmptyArchive: true
+    }
+  }
+}
