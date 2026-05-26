@@ -4,19 +4,29 @@ import subprocess
 import sys
 from pathlib import Path
 
-IGNORE_PREFIXES = ("tmpfs", "devtmpfs", "overlay", "proc", "sysfs", "cgroup", "nsfs", "squashfs", "ramfs")
-THRESHOLD = 80
+THRESHOLD = 10
 REPORT_FILE = Path("fs_report.json")
+IGNORE_FS_PREFIXES = ("tmpfs", "devtmpfs", "overlay", "proc", "sysfs", "cgroup", "nsfs", "squashfs", "ramfs")
+
+def should_ignore(fs, mount):
+    if fs.startswith(IGNORE_FS_PREFIXES):
+        return True
+    if fs.startswith("/dev/loop"):
+        return True
+    if "/var/lib/snapd/snap/" in mount:
+        return True
+    return False
 
 def main():
     out = subprocess.check_output(["df", "-P"], text=True).splitlines()[1:]
     alerts = []
+
     for line in out:
         cols = line.split()
         if len(cols) < 6:
             continue
         fs, used_pct, mount = cols[0], cols[4], cols[5]
-        if fs.startswith(IGNORE_PREFIXES):
+        if should_ignore(fs, mount):
             continue
         try:
             pct = int(used_pct.rstrip("%"))
