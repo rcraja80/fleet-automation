@@ -19,4 +19,10 @@ pipeline {
       }
     }
   }
+
+  post {
+    always {
+      archiveArtifacts artifacts: 'fs_report.json', allowEmptyArchive: true
+    }
+  }
 }

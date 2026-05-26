@@ -29,8 +29,9 @@ def main():
             alerts.append({"filesystem": fs, "mount": mount, "usage": pct})
 
     result = {"threshold": THRESHOLD, "count": len(alerts), "alerts": alerts}
-    REPORT_FILE.write_text(json.dumps(result, indent=2))
-    print(json.dumps(result, indent=2))
+    text = json.dumps(result, indent=2)
+    REPORT_FILE.write_text(text)
+    print(text)
     return 2 if alerts else 0
 
 if __name__ == "__main__":
