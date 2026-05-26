@@ -1,0 +1,28 @@
+pipeline {
+    agent any
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Run FS API Check') {
+            steps {
+                sh 'ansible-playbook -i inventory/hosts.ini playbooks/run_fs_api.yml'
+            }
+        }
+
+        stage('Show Report') {
+            steps {
+                sh 'cat fs_report.json'
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'fs_report.json', allowEmptyArchive: false
+        }
+    }
+}

@@ -1,0 +1,33 @@
+- name: Call FastAPI filesystem endpoint
+  hosts: local
+  gather_facts: false
+
+  tasks:
+    - name: Check API health
+      uri:
+        url: http://127.0.0.1:8000/health
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: health_result
+
+    - name: Show health response
+      debug:
+        var: health_result.json
+
+    - name: Call filesystem endpoint
+      uri:
+        url: http://127.0.0.1:8000/fs-check
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: fs_result
+
+    - name: Show filesystem JSON
+      debug:
+        var: fs_result.json
+
+    - name: Save report to workspace
+      copy:
+        content: "{{ fs_result.json | to_nice_json }}"
+        dest: "{{ playbook_dir }}/../fs_report.json"
