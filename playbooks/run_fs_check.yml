@@ -11,9 +11,3 @@
     - name: Show result
       debug:
         var: fs_result.stdout_lines
-
-    # --- ADD THIS TASK TO CREATE VALID JSON ---
-    - name: Save pure JSON report to Jenkins workspace
-      copy:
-        content: "{{ fs_result.stdout }}"
-        dest: "{{ playbook_dir }}/../fs_report.json"

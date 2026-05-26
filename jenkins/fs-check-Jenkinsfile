@@ -9,15 +9,14 @@ pipeline {
     stages {
         stage('Run FS Check') {
             steps {
-                // By adding || true, we prevent Jenkins from stopping if Ansible passes exit code 2
-                sh 'ansible-playbook -i inventory/hosts.ini playbooks/run_fs_check.yml || true'
+                // We bypass Ansible's pathing and write the output directly into the workspace root
+                sh 'python3 scripts/fs_check.py > fs_report.json || true'
             }
         }
     }
 
     post {
         always {
-            // Target the explicitly generated root-level file
             archiveArtifacts artifacts: 'fs_report.json', allowEmptyArchive: false
         }
     }
