@@ -22,7 +22,7 @@ pipeline {
 
   post {
     always {
-      archiveArtifacts artifacts: '**/*.json, **/*.log', allowEmptyArchive: true
+      archiveArtifacts artifacts: 'fs_report.json', allowEmptyArchive: true
     }
   }
 }

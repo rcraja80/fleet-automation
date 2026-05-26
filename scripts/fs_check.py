@@ -2,15 +2,19 @@
 import json
 import subprocess
 import sys
+from pathlib import Path
 
 IGNORE_PREFIXES = ("tmpfs", "devtmpfs", "overlay", "proc", "sysfs", "cgroup", "nsfs", "squashfs", "ramfs")
 THRESHOLD = 80
+REPORT_FILE = Path("fs_report.json")
 
 def main():
     try:
         out = subprocess.check_output(["df", "-P"], text=True).splitlines()[1:]
     except Exception as exc:
-        print(json.dumps({"error": str(exc)}))
+        report = {"error": str(exc)}
+        REPORT_FILE.write_text(json.dumps(report, indent=2))
+        print(json.dumps(report, indent=2))
         return 1
 
     alerts = []
@@ -31,6 +35,7 @@ def main():
             alerts.append({"filesystem": fs, "mount": mount, "usage": pct})
 
     result = {"threshold": THRESHOLD, "count": len(alerts), "alerts": alerts}
+    REPORT_FILE.write_text(json.dumps(result, indent=2))
     print(json.dumps(result, indent=2))
     return 2 if alerts else 0
 
