@@ -9,16 +9,10 @@ THRESHOLD = 80
 REPORT_FILE = Path("fs_report.json")
 
 def main():
-    try:
-        out = subprocess.check_output(["df", "-P"], text=True).splitlines()[1:]
-    except Exception as exc:
-        report = {"error": str(exc)}
-        REPORT_FILE.write_text(json.dumps(report, indent=2))
-        print(json.dumps(report, indent=2))
-        return 1
-
+    out = subprocess.check_output(["df", "-P"], text=True).splitlines()[1:]
     alerts = []
     seen = set()
+
     for line in out:
         cols = line.split()
         if len(cols) < 6:
@@ -28,7 +22,7 @@ def main():
             continue
         seen.add(mount)
         try:
-            pct = int(used_pct.rstrip('%'))
+            pct = int(used_pct.rstrip("%"))
         except ValueError:
             continue
         if pct > THRESHOLD:
