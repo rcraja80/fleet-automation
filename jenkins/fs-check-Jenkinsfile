@@ -15,7 +15,11 @@ pipeline {
 
     stage('Run FS Check') {
       steps {
-        sh 'ansible-playbook -i inventory/hosts.ini playbooks/run_fs_check.yml'
+        script {
+          def out = sh(script: 'ansible-playbook -i inventory/hosts.ini playbooks/run_fs_check.yml', returnStdout: true).trim()
+          writeFile file: 'fs_report.json', text: out
+          echo out
+        }
       }
     }
   }

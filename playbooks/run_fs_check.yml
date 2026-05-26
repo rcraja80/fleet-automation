@@ -11,12 +11,3 @@
     - name: Show result
       debug:
         msg: "{{ fs_result.stdout }}"
-
-    - name: Verify report exists
-      command: ls -l fs_report.json
-      register: report_check
-      changed_when: false
-
-    - name: Show report check
-      debug:
-        msg: "{{ report_check.stdout }}"
